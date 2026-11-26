@@ -9,17 +9,17 @@ import { NotificacaoApp } from "./interface/NotificacaoApp";
 import { SaqueException } from "./excecoes/SaqueException";
 
 const cliente1 = new Cliente(
-    "Luiza Ferreira",
-    "333.333.333-33",
-    "Avenida Central",
-    3200
+  "Luiza Ferreira",
+  "333.333.333-33",
+  "Avenida Central",
+  3200,
 );
 
 const cliente2 = new Cliente(
-    "Rafael Costa",
-    "444.444.444-44",
-    "Rua das Flores",
-    4100
+  "Rafael Costa",
+  "444.444.444-44",
+  "Rua das Flores",
+  4100,
 );
 
 cliente1.adicionarCanal(new Email());
@@ -28,50 +28,29 @@ cliente1.adicionarCanal(new NotificacaoApp());
 cliente2.adicionarCanal(new SMS());
 cliente2.adicionarCanal(new Email());
 
-const conta1 = new Conta(
-    205,
-    2,
-    "10/10/2026",
-    120,
-    450,
-    cliente1
-);
+const conta1 = new Conta(205, 2, "10/10/2026", 120, 450, cliente1);
 
-const conta2 = new Conta(
-    310,
-    3,
-    "15/10/2026",
-    850,
-    250,
-    cliente2
-);
+const conta2 = new Conta(310, 3, "15/10/2026", 850, 250, cliente2);
 
 function testarSaque(conta: Conta, valor: number): void {
+  try {
+    conta.sacar(valor);
+  } catch (erro) {
+    if (erro instanceof SaqueException) {
+      console.log("ERRO:", erro.message);
 
-    try {
-        conta.sacar(valor);
-
-    } catch (erro) {
-
-        if (erro instanceof SaqueException) {
-
-            console.log("ERRO:", erro.message);
-
-            conta.titular.notificar(erro.message);
-
-        } else {
-            console.log("Erro inesperado:", erro);
-        }
+      conta.titular.notificar(erro.message);
+    } else {
+      console.log("Erro inesperado:", erro);
     }
+  }
 
-    console.log("-------------------------");
+  console.log("-------------------------");
 }
-
 
 console.log("TESTES DE VALOR INVÁLIDO");
 testarSaque(conta1, -25);
 testarSaque(conta1, 0);
-
 
 console.log("TESTES DE CONTA BLOQUEADA");
 conta1.bloqueada = true;
